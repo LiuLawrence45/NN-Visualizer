@@ -35,13 +35,14 @@ import javax.swing.JTree;
 
 public class GUI {
 	
+	//Initialize modifier = new Initialize();
 	static NeuralNetwork gate = new NeuralNetwork();
 	static int input = 2;
 	static int hlayers = 1;
 	static int hneurons = 6;
 	static int output = 1;
 
-	private JFrame frame;
+	private JFrame frmNeuralNetworkVisualizer;
 	private JTextField u_outputNeurons;
 	private JTextField u_inputNeurons;
 	private JTextField u_hiddenLayers;
@@ -49,38 +50,13 @@ public class GUI {
 	private JTextField textField;
 	private JTextField textField_1;
 	
+	static JRadioButton enableXOR;
+
+	static JRadioButton enableNOR;
+	static JRadioButton enableAND;
+	
 	
 	public static void runNN() {
-		Neuron.setRangeWeight(-1,1);
-		gate.layers = new Layer[hlayers+2];
-		gate.layers[0] = null;
-		gate.layers[1] = new Layer(input,hneurons);
-		gate.layers[2] = new Layer(hneurons,output);
-		gate.CreateXORTrainingData();
-		
-		System.out.println("======================");
-		System.out.println("Output before training");
-		System.out.println("======================");
-		
-		for (int i = 0; i < gate.tDataSet.length;i++) {
-			gate.forward(gate.tDataSet[i].data);
-			System.out.println(gate.layers[2].neurons[0].value);
-		}
-		
-		
-		final int ITERATIONS = 1000000;
-		
-		float[][] total_loss = gate.train(ITERATIONS, 0.05f);
-		
-		
-		System.out.println("======================");
-		System.out.println("Output after training");
-		System.out.println("======================");
-		
-		for (int i = 0; i < gate.tDataSet.length;i++) {
-			gate.forward(gate.tDataSet[i].data);
-			System.out.println(gate.layers[2].neurons[0].value);
-		}
 		
 	}
 
@@ -93,7 +69,7 @@ public class GUI {
 			public void run() {
 				try {
 					GUI window = new GUI();
-					window.frame.setVisible(true);
+					window.frmNeuralNetworkVisualizer.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -114,15 +90,16 @@ public class GUI {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color (238,238,238));
-		frame.setBounds(100, 100, 752, 517);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		frmNeuralNetworkVisualizer = new JFrame();
+		frmNeuralNetworkVisualizer.setTitle("Neural Network Visualizer");
+		frmNeuralNetworkVisualizer.getContentPane().setBackground(new Color (238,238,238));
+		frmNeuralNetworkVisualizer.setBounds(100, 100, 752, 517);
+		frmNeuralNetworkVisualizer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmNeuralNetworkVisualizer.getContentPane().setLayout(null);
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(6, 6, 433, 477);
-		frame.getContentPane().add(panel);
+		frmNeuralNetworkVisualizer.getContentPane().add(panel);
 		panel.setLayout(null);
 		
 		JPanel panel_2 = new JPanel();
@@ -323,7 +300,7 @@ public class GUI {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(451, 6, 295, 477);
-		frame.getContentPane().add(panel_1);
+		frmNeuralNetworkVisualizer.getContentPane().add(panel_1);
 		panel_1.setLayout(null);
 		
 		JPanel panel_8 = new JPanel();
@@ -377,12 +354,60 @@ public class GUI {
 		btnNewButton_2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				runNN();
+				gate = new NeuralNetwork(input, hlayers, hneurons, output);
+				//runNN();
+				if (enableNOR.isSelected()) {
+					gate.CreateNORTrainingData();
+				}
+				else if (enableXOR.isSelected()) {
+					gate.CreateXORTrainingData();
+				}
+				else if (enableAND.isSelected()) {
+					gate.CreateANDTrainingData();
+				}
+				else {
+					System.out.println("Defaulting to XOR");
+					gate.CreateXORTrainingData();
+				}
+				
 				System.out.println("input: " + input);
 				System.out.println("hlayers: " + hlayers);
 				System.out.println("hneurons: " + hneurons);
 				System.out.println("output: " + output);
 				System.out.println("--------");
+				
+				System.out.println("======================");
+				System.out.println("Output before training");
+				System.out.println("======================");
+				
+				for (int i = 0; i < gate.tDataSet.length;i++) {
+					gate.forward(gate.tDataSet[i].data);
+					System.out.println(gate.layers[2].neurons[0].value);
+				}
+				
+				//float[][] total_loss = new float[1000000][1];
+				
+				final int ITERATIONS = 1000000;
+				
+				float[][] total_loss = gate.train(ITERATIONS, 0.01f);
+				//System.out.println("first loss: " + total_loss[0][0]);
+				
+				
+				System.out.println("======================");
+				System.out.println("Output after training");
+				System.out.println("======================");
+				
+				for (int i = 0; i < gate.tDataSet.length;i++) {
+					for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
+						System.out.print(gate.tDataSet[i].data[j] + " ");
+					}
+					System.out.print("\t");
+					gate.forward(gate.tDataSet[i].data);
+					System.out.println(gate.layers[2].neurons[0].value);
+					//System.out.println("")
+				}
+
+				gate.createLossGraph(ITERATIONS, total_loss);
 				
 				
 			}
@@ -439,18 +464,19 @@ public class GUI {
 		lblNewLabel_9.setBounds(16, 34, 61, 16);
 		panel_9.add(lblNewLabel_9);
 		
-		JRadioButton enableAND = new JRadioButton("Enable");
+		enableAND = new JRadioButton("Enable");
 		enableAND.setBounds(89, 34, 141, 23);
 		panel_9.add(enableAND);
 		
-		JRadioButton enableNOR = new JRadioButton("Enable");
+		enableNOR = new JRadioButton("Enable");
 		enableNOR.setBounds(89, 60, 141, 23);
 		panel_9.add(enableNOR);
 		
-		JRadioButton enableXOR = new JRadioButton("Enable");
+		enableXOR = new JRadioButton("Enable");
 		enableXOR.setBounds(89, 90, 141, 23);
 		panel_9.add(enableXOR);
 		
+		//ADD BOUTTONS
 		ButtonGroup group = new ButtonGroup();
 		group.add(enableXOR);
 		group.add(enableNOR);

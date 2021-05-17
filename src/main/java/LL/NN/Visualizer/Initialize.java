@@ -19,15 +19,24 @@ import javafx.*;
 
 public class Initialize {
 	
+	int input = 2;
+	int hlayers = 1;
+	int hneurons = 6;
+	int output = 1;
 
-	public static void main(String []args)throws IOException {
+
+	
+	
+
+	public static void main(String []args) {
+		
+		
+
+		
+		
 		
 		NeuralNetwork gate = new NeuralNetwork();
 		Neuron.setRangeWeight(-1,1);
-		
-		
-		
-		
 		
 		/*
 		 * Three layered neural network with 2 input neurons, 6 hidden neurons, and 1 output
@@ -52,7 +61,7 @@ public class Initialize {
 		
 		final int ITERATIONS = 1000000;
 		
-		float[][] total_loss = gate.train(ITERATIONS, 0.05f);
+		float[][] total_loss = gate.train(ITERATIONS, 0.1f);
 		//System.out.println("first loss: " + total_loss[0][0]);
 		
 		
@@ -82,33 +91,10 @@ public class Initialize {
 		for (int i =0; i < ITERATIONS; i++) {
 			series.add(i,total_loss[i][0]);
 			window.repaint();
-			//System.out.println("loss: " + total_loss[i][0]);
+			//window.validate();
+			System.out.println("loss: " + total_loss[i][0]);
 			}
-		
-
-		
-		
-		
-		
-		
-		//gate.loadData();
-		
-//		DefaultPieDataset data = new DefaultPieDataset();
-//        data.setValue("Category 1", 43.2);
-//        data.setValue("Category 2", 27.9);
-//        data.setValue("Category 3", 79.5);
-//        // create a chart...
-//        JFreeChart chart = ChartFactory.createPieChart(
-//            "Sample Pie Chart",
-//            data,
-//            true, // legend?
-//            true, // tooltips?
-//            false // URLs?
-//        );
-//        // create and display a frame...
-//        ChartFrame frame = new ChartFrame("First", chart);
-//        frame.pack();
-//        frame.setVisible(true);
+	
 		
 		
 		
