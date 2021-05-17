@@ -65,11 +65,18 @@ public class NeuralNetwork {
 	  * @param output
 	  */
 	 public NeuralNetwork(int input, int hlayers, int hneurons, int output) {
-		 layers = new Layer[hlayers+2];
-		 layers[0] = null;
-		 layers[1] = new Layer(input,hneurons);
-		 layers[2] = new Layer(hneurons,output);
-		 
+			layers = new Layer[hlayers+2];
+			layers[0] = null;
+			layers[1] = new Layer(input, hneurons);
+			for (int i = 2; i <=hlayers; i++) {
+				layers[i] = new Layer(hneurons,hneurons);
+			}
+			layers[hlayers+1] = new Layer(hneurons,output);
+//		 layers = new Layer[hlayers+2];
+//		 layers[0] = null;
+//		 layers[1] = new Layer(input,hneurons);
+//		 layers[2] = new Layer(hneurons,output);
+//		 
 		 Neuron.setRangeWeight(-1,1); 
 	 }
 	 
@@ -211,7 +218,7 @@ public class NeuralNetwork {
 	 */
 	public  void forward(float[] inputs) {
 		layers[0] = new Layer(inputs);
-		
+		//System.out.println("layers: " + layers.length);
 		for (int i = 1	;i<layers.length; i++) {
 			for (int j = 0; j < layers[i].neurons.length; j++) {
 				float sum = 0;
@@ -332,7 +339,7 @@ public class NeuralNetwork {
 		JFrame window = new JFrame("Loss output");
 		window.setSize(600,400);
 		window.setLayout(new BorderLayout());
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
 		

@@ -32,6 +32,8 @@ import javax.swing.JList;
 import javax.swing.JToggleButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTree;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class GUI {
 	
@@ -54,6 +56,7 @@ public class GUI {
 
 	static JRadioButton enableNOR;
 	static JRadioButton enableAND;
+	JCheckBox displayLoss;
 	
 	
 	public static void runNN() {
@@ -124,14 +127,6 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					input = Integer.parseInt(u_inputNeurons.getText());
-					gate.layers[1] = new Layer(input,hneurons);
-					
-					System.out.println("input: " + input);
-					System.out.println("hlayers: " + hlayers);
-					System.out.println("hneurons: " + hneurons);
-					System.out.println("output: " + output);
-					System.out.println("--------");
-					
 					
 					
 				}
@@ -163,7 +158,7 @@ public class GUI {
 		
 		
 		/**
-		 * Changing layers doesnt work
+		 * Changing layers does work now! YAY!
 		 */
 		JButton submitHLayers = new JButton("Submit");
 		submitHLayers.addMouseListener(new MouseAdapter() {
@@ -172,18 +167,7 @@ public class GUI {
 				
 				try {
 					hlayers = Integer.parseInt(u_hiddenLayers.getText());
-					gate.layers = new Layer[hlayers+2];
-					gate.layers[1] = new Layer(input, hneurons);
-					for (int i = 2; i < hlayers+1; i++) {
-						gate.layers[i] = new Layer(hneurons,hneurons);
-					}
-					gate.layers[hlayers+1] = new Layer(hneurons,output);
 					
-					System.out.println("input: " + input);
-					System.out.println("hlayers: " + hlayers);
-					System.out.println("hneurons: " + hneurons);
-					System.out.println("output: " + output);
-					System.out.println("--------");
 				}
 				catch(Exception E) {
 					
@@ -211,17 +195,6 @@ public class GUI {
 				
 				try {
 					hneurons = Integer.parseInt(u_hiddenNeurons.getText());
-					gate.layers[1] = new Layer(input, hneurons);
-					for (int i = 2; i < hlayers+1; i++) {
-						gate.layers[i] = new Layer(hneurons,hneurons);
-					}
-					gate.layers[hlayers+1] = new Layer(hneurons,output);
-					
-					System.out.println("input: " + input);
-					System.out.println("hlayers: " + hlayers);
-					System.out.println("hneurons: " + hneurons);
-					System.out.println("output: " + output);
-					System.out.println("--------");
 				}
 				catch(Exception E) {
 					
@@ -256,13 +229,7 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					output = Integer.parseInt(u_outputNeurons.getText());
-					gate.layers[hlayers+1] = new Layer(hneurons,output);
 					
-					System.out.println("input: " + input);
-					System.out.println("hlayers: " + hlayers);
-					System.out.println("hneurons: " + hneurons);
-					System.out.println("output: " + output);
-					System.out.println("--------");
 				}
 				catch(Exception E) {
 					
@@ -318,9 +285,9 @@ public class GUI {
 		lblNewLabel_10.setBounds(6, 6, 147, 16);
 		panel_11.add(lblNewLabel_10);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Enable");
-		chckbxNewCheckBox.setBounds(16, 34, 128, 23);
-		panel_11.add(chckbxNewCheckBox);
+		displayLoss = new JCheckBox("Enable");
+		displayLoss.setBounds(16, 34, 128, 23);
+		panel_11.add(displayLoss);
 		
 		JLabel lblNewLabel_11 = new JLabel("Display Gradient");
 		lblNewLabel_11.setBounds(6, 69, 147, 16);
@@ -355,6 +322,7 @@ public class GUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				gate = new NeuralNetwork(input, hlayers, hneurons, output);
+				System.out.println("laeyrs 2: " + gate.layers.length);
 				//runNN();
 				if (enableNOR.isSelected()) {
 					gate.CreateNORTrainingData();
@@ -366,7 +334,7 @@ public class GUI {
 					gate.CreateANDTrainingData();
 				}
 				else {
-					System.out.println("Defaulting to XOR");
+					System.out.println("Defaulting to XOR...");
 					gate.CreateXORTrainingData();
 				}
 				
@@ -407,7 +375,10 @@ public class GUI {
 					//System.out.println("")
 				}
 
-				gate.createLossGraph(ITERATIONS, total_loss);
+				if (displayLoss.isSelected() == true) {
+					gate.createLossGraph(ITERATIONS, total_loss);
+				}
+
 				
 				
 			}

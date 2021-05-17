@@ -1,0 +1,51 @@
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4867776/
+Predicting possible mutations in RNA strands
+
+
+https://www.sciencedirect.com/topics/computer-science/sigmoid-function
+Sigmoid use explained
+
+https://datascience.stackexchange.com/questions/30676/role-derivative-of-sigmoid-function-in-neural-networks
+The use of derivatives in neural networks is for the training process called backpropagation. This technique uses gradient descent in order to find an optimal set of model parameters in order to minimize a loss function. In your example you must use the derivative of a sigmoid because that is the activation that your individual neurons are using.
+
+The loss function
+The essence of machine learning is to optimize a cost function such that we can either minimize or maximize some target function. This is typically called the loss or cost function. We typically want to minimize this function. The cost function, 𝐶, associates some penalty based on the resulting errors when passing data through your model as a function of the model parameters.
+
+
+https://ai.stackexchange.com/questions/5546/what-is-the-difference-between-a-convolutional-neural-network-and-a-regular-neur/
+
+
+https://www.machinecurve.com/index.php/2020/12/01/how-to-check-if-your-deep-learning-model-is-underfitting-or-overfitting/
+
+Using loss and visualization to see if model is overfitting / underfitting the data given
+
+
+
+--------
+Ideas
+--------
+1. Using XYZLineChart to visualize how the neural network optimizes across different training samples
+
+
+
+--------
+User Manual
+--------
+
+1. Adjusting Layers/Neurons
+*	Make sure the amount of input neurons is the same as the amount of input variables in the input
+*	Adjusting hidden layers to more than 1 with a small set of training data will result in inaccurate network training
+*	Adding neurons into each hidden layer will result in longer run-time
+
+2. Manually inputting Training Data
+*	Training Data must correspond with amount of input neurons or else program will crash
+*	Input must look like below
+
+v1,v2,v3,vn... : o1
+v1,v2,v3,vn... : o2
+v1,v2,v3,vn... : o3
+v1,v2,v3,vn... : on
+
+3. 
+
+
