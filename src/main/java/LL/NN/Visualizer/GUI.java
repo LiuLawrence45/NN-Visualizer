@@ -17,6 +17,13 @@ import javax.swing.ButtonGroup;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
 import javax.swing.SpringLayout;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 import java.awt.GridBagConstraints;
 import java.awt.BorderLayout;
 import net.miginfocom.swing.MigLayout;
@@ -27,6 +34,7 @@ import java.awt.Color;
 import java.awt.SystemColor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.awt.Font;
 import javax.swing.JList;
 import javax.swing.JToggleButton;
@@ -49,18 +57,48 @@ public class GUI {
 	private JTextField u_inputNeurons;
 	private JTextField u_hiddenLayers;
 	private JTextField u_hiddenNeurons;
-	private JTextField textField;
-	private JTextField textField_1;
+	JTextField u_rate;
+	JTextField u_iterations;
+	
+	
+	JTextArea m_trainingData;
 	
 	static JRadioButton enableXOR;
 
 	static JRadioButton enableNOR;
 	static JRadioButton enableAND;
-	JCheckBox displayLoss;
+	static JCheckBox displayLoss;
+	static boolean manualTraining;
+	static JTextArea u_input;
+	TrainingData parsedUserInput;
+	static boolean networkTrained = false;
 	
 	
-	public static void runNN() {
+	
+	public void manualTraining() {
+		String [] data = m_trainingData.getText().split("\\n");
+		float [][] tData = new float[data.length][m_trainingData.getText().split("\\n")[0].split("[,:]").length];
 		
+		for (int i = 0; i < data.length; i++) {
+			String [] splitted = m_trainingData.getText().split("\\n")[i].split("[,:]");
+			for (int b =0; b < splitted.length; b++) {
+				tData[i][b] = Float.parseFloat(splitted[b]);
+			}
+			
+		
+		}
+		
+		gate.tDataSet = new TrainingData[data.length];
+		for (int i = 0; i < data.length; i++) {
+			gate.tDataSet[i] = new TrainingData(Arrays.copyOfRange(tData[i],0,tData[0].length-1),
+					Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
+		}
+		
+		for (int i =0; i < gate.tDataSet.length; i++) {
+			System.out.println(Arrays.toString(gate.tDataSet[i].data));
+			System.out.println(Arrays.toString(gate.tDataSet[i].expectedOutput));
+			System.out.println("======================");
+		}
 	}
 
 	/**
@@ -127,6 +165,11 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					input = Integer.parseInt(u_inputNeurons.getText());
+					System.out.println("input: " + input);
+					System.out.println("hlayers: " + hlayers);
+					System.out.println("hneurons: " + hneurons);
+					System.out.println("output: " + output);
+					System.out.println("======================");
 					
 					
 				}
@@ -167,6 +210,11 @@ public class GUI {
 				
 				try {
 					hlayers = Integer.parseInt(u_hiddenLayers.getText());
+					System.out.println("input: " + input);
+					System.out.println("hlayers: " + hlayers);
+					System.out.println("hneurons: " + hneurons);
+					System.out.println("output: " + output);
+					System.out.println("======================");
 					
 				}
 				catch(Exception E) {
@@ -195,6 +243,11 @@ public class GUI {
 				
 				try {
 					hneurons = Integer.parseInt(u_hiddenNeurons.getText());
+					System.out.println("input: " + input);
+					System.out.println("hlayers: " + hlayers);
+					System.out.println("hneurons: " + hneurons);
+					System.out.println("output: " + output);
+					System.out.println("======================");
 				}
 				catch(Exception E) {
 					
@@ -229,6 +282,11 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					output = Integer.parseInt(u_outputNeurons.getText());
+					System.out.println("input: " + input);
+					System.out.println("hlayers: " + hlayers);
+					System.out.println("hneurons: " + hneurons);
+					System.out.println("output: " + output);
+					System.out.println("======================");
 					
 				}
 				catch(Exception E) {
@@ -245,18 +303,30 @@ public class GUI {
 		panel.add(panel_7);
 		panel_7.setLayout(null);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(6, 34, 409, 136);
-		panel_7.add(textArea);
+		m_trainingData = new JTextArea();
+		m_trainingData.setBounds(6, 34, 409, 136);
+		panel_7.add(m_trainingData);
 		
+		//Manual Training Data
 		JLabel lblNewLabel = new JLabel("Manual Training Data ");
 		lblNewLabel.setBounds(6, 6, 409, 16);
 		panel_7.add(lblNewLabel);
 		
-		JButton btnNewButton = new JButton("Submit");
-		btnNewButton.setBounds(144, 170, 117, 29);
-		panel_7.add(btnNewButton);
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton submitMTD = new JButton("Submit");
+		submitMTD.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				manualTraining = true;
+				System.out.println("Submitted Manual Training Data... ");
+				System.out.println("======================");
+				
+				
+				
+			}
+		});
+		submitMTD.setBounds(144, 170, 117, 29);
+		panel_7.add(submitMTD);
+		submitMTD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
@@ -322,46 +392,72 @@ public class GUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				gate = new NeuralNetwork(input, hlayers, hneurons, output);
-				System.out.println("laeyrs 2: " + gate.layers.length);
+				//System.out.println("laeyrs 2: " + gate.layers.length);
 				//runNN();
-				if (enableNOR.isSelected()) {
-					gate.CreateNORTrainingData();
-				}
-				else if (enableXOR.isSelected()) {
-					gate.CreateXORTrainingData();
-				}
-				else if (enableAND.isSelected()) {
-					gate.CreateANDTrainingData();
+				if (manualTraining == true) {
+					manualTraining();
 				}
 				else {
-					System.out.println("Defaulting to XOR...");
-					gate.CreateXORTrainingData();
+					if (enableNOR.isSelected()) {
+						gate.CreateNORTrainingData();
+					}
+					else if (enableXOR.isSelected()) {
+						gate.CreateXORTrainingData();
+					}
+					else if (enableAND.isSelected()) {
+						gate.CreateANDTrainingData();
+					}
+					else {
+						System.out.println("Defaulting to XOR...");
+						System.out.println("======================");
+						gate.CreateXORTrainingData();
+					}	
 				}
+				networkTrained = true;
 				
-				System.out.println("input: " + input);
-				System.out.println("hlayers: " + hlayers);
-				System.out.println("hneurons: " + hneurons);
-				System.out.println("output: " + output);
-				System.out.println("--------");
 				
-				System.out.println("======================");
+//				System.out.println("input: " + input);
+//				System.out.println("hlayers: " + hlayers);
+//				System.out.println("hneurons: " + hneurons);
+//				System.out.println("output: " + output);
+				//System.out.println("======================");
+				
+				//System.out.println("======================");
 				System.out.println("Output before training");
 				System.out.println("======================");
 				
 				for (int i = 0; i < gate.tDataSet.length;i++) {
 					gate.forward(gate.tDataSet[i].data);
-					System.out.println(gate.layers[2].neurons[0].value);
+					System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
 				}
+				System.out.println("======================");
 				
 				//float[][] total_loss = new float[1000000][1];
+				int ITERATIONS; float RATE;
+				if (u_iterations.getText().isEmpty() == false) {
+					ITERATIONS = Integer.parseInt(u_iterations.getText());
+				}
+				else {
+					System.out.println("Defaulting to 1 million iterations... ");
+					System.out.println("======================");
+					ITERATIONS = 1000000;
+				}
+				if (u_rate.getText().isEmpty() == false) {
+
+					RATE = Float.parseFloat(u_rate.getText());
+				}
+				else {
+					System.out.println("Defaulting to LR of 0.05... ");
+					System.out.println("======================");
+					RATE = 0.05f;
+				}
 				
-				final int ITERATIONS = 1000000;
 				
-				float[][] total_loss = gate.train(ITERATIONS, 0.01f);
+				float[][] total_loss = gate.train(ITERATIONS, 0.05f);
 				//System.out.println("first loss: " + total_loss[0][0]);
 				
 				
-				System.out.println("======================");
+				//System.out.println("======================");
 				System.out.println("Output after training");
 				System.out.println("======================");
 				
@@ -371,13 +467,15 @@ public class GUI {
 					}
 					System.out.print("\t");
 					gate.forward(gate.tDataSet[i].data);
-					System.out.println(gate.layers[2].neurons[0].value);
+					System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
 					//System.out.println("")
 				}
 
 				if (displayLoss.isSelected() == true) {
 					gate.createLossGraph(ITERATIONS, total_loss);
+
 				}
+
 
 				
 				
@@ -399,19 +497,19 @@ public class GUI {
 		lblNewLabel_13.setBounds(6, 6, 88, 16);
 		panel_13.add(lblNewLabel_13);
 		
-		textField = new JTextField();
-		textField.setBounds(6, 34, 88, 26);
-		panel_13.add(textField);
-		textField.setColumns(10);
+		u_rate = new JTextField();
+		u_rate.setBounds(6, 34, 88, 26);
+		panel_13.add(u_rate);
+		u_rate.setColumns(10);
 		
 		JLabel lblNewLabel_14 = new JLabel("Iterations");
 		lblNewLabel_14.setBounds(16, 72, 61, 16);
 		panel_13.add(lblNewLabel_14);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(6, 100, 88, 26);
-		panel_13.add(textField_1);
-		textField_1.setColumns(10);
+		u_iterations = new JTextField();
+		u_iterations.setBounds(6, 100, 88, 26);
+		panel_13.add(u_iterations);
+		u_iterations.setColumns(10);
 		
 		JPanel panel_9 = new JPanel();
 		panel_9.setBounds(6, 6, 283, 126);
@@ -462,12 +560,41 @@ public class GUI {
 		lblNewLabel_7.setBounds(6, 6, 271, 16);
 		panel_10.add(lblNewLabel_7);
 		
-		JTextArea textArea_1 = new JTextArea();
-		textArea_1.setBounds(6, 34, 271, 29);
-		panel_10.add(textArea_1);
+		u_input = new JTextArea();
+		u_input.setBounds(6, 34, 271, 29);
+		panel_10.add(u_input);
 		
-		JButton btnNewButton_1 = new JButton("Submit");
-		btnNewButton_1.setBounds(84, 75, 117, 29);
-		panel_10.add(btnNewButton_1);
+		JButton submit_uinput = new JButton("Submit");
+		submit_uinput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (networkTrained == true) {
+					String[] data = u_input.getText().split(",");
+					float [] float_data = new float [data.length];
+					for (int i = 0; i < data.length; i++) {
+						float_data[i] = Float.parseFloat(data[i]);
+					}
+					gate.forward(float_data);
+					
+					//Print every neuron
+					for (int i =0; i < gate.layers[gate.layers.length-1].neurons.length; i++) {
+						System.out.println(gate.layers[gate.layers.length-1].neurons[i].value);
+					}
+
+					
+					
+				}
+				else {
+					System.out.println("Network has not been trained yet.");
+					System.out.println("======================");
+				}
+			}
+		});
+		submit_uinput.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		submit_uinput.setBounds(84, 75, 117, 29);
+		panel_10.add(submit_uinput);
 	}
 }

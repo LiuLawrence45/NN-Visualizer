@@ -348,8 +348,9 @@ public class NeuralNetwork {
 		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
 		window.add(new ChartPanel(chart), BorderLayout.CENTER);
 		window.setVisible(true);
+
 		
-		for (int i =0; i < ITERATIONS/1000; i++) {
+		for (int i =0; i < ITERATIONS; i++) {
 			series.add(i,total_loss[i][0]);
 			//System.out.println(total_loss[i][0]);
 
