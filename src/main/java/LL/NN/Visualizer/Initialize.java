@@ -10,9 +10,26 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart3d.Chart3D;
+import org.jfree.chart3d.Chart3DFactory;
+import org.jfree.chart3d.axis.IntegerTickSelector;
+import org.jfree.chart3d.axis.NumberAxis3D;
+import org.jfree.chart3d.data.xyz.XYZDataset;
+import org.jfree.chart3d.data.xyz.XYZSeries;
+import org.jfree.chart3d.data.xyz.XYZSeriesCollection;
+import org.jfree.chart3d.fx.Chart3DViewer;
+import org.jfree.chart3d.graphics3d.Dimension3D;
+import org.jfree.chart3d.plot.XYZPlot;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import static javafx.application.Application.launch;
+import javafx.application.Application;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import java.awt.Color;
 
 import javafx.*;
 
@@ -27,14 +44,6 @@ public class Initialize{
 
 
 	public static void createLoss(int ITERATIONS, float[][]total_loss) {
-//		JFrame frmNeuralNetworkVisualizer;
-//		frmNeuralNetworkVisualizer = new JFrame();
-//		frmNeuralNetworkVisualizer.setTitle("Neural Network Visualizer");
-//		frmNeuralNetworkVisualizer.getContentPane().setBackground(new Color (238,238,238));
-//		frmNeuralNetworkVisualizer.setBounds(100, 100, 752, 517);
-//		frmNeuralNetworkVisualizer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frmNeuralNetworkVisualizer.getContentPane().setLayout(null);
-//		frmNeuralNetworkVisualizer.setVisible(true);
 		JFrame window = new JFrame("Loss output");
 		window.setSize(600,400);
 		window.setLayout(new BorderLayout());
@@ -51,16 +60,35 @@ public class Initialize{
 		for (int i =0; i < ITERATIONS; i++) {
 			series.add(i,total_loss[i][0]);
 			window.repaint();
-			//window.validate();
+			//window.revalidate();
 			System.out.println("loss: " + total_loss[i][0]);
 			}
 	
 	}
 	
+	
+	public static void createCompare() {
+		StackPane sp = new StackPane();
+	    XYZDataset dataset = new XYZSeriesCollection<>();
+	    Chart3D chart = Chart3DFactory.createXYZLineChart("XYZ Line Chart Demo", 
+	    "Orson Charts", dataset, "Day", "Index", "Station");
+	 
+	    Chart3DViewer viewer = new Chart3DViewer(chart);
+	    sp.getChildren().add(viewer);
+	    Scene scene = new Scene(sp, 768, 512);
+	    Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Orson Charts: XYZLineChart3DFXDemo1.java");
+        stage.show();
+	    
+		
+	}
+	
+	
+	
 
 	public static void main(String []args) {
-		
-		
+
 
 		
 		
@@ -105,7 +133,9 @@ public class Initialize{
 		}
 		
 		//Loss graph
-		Initialize.createLoss(ITERATIONS, total_loss);
+		Initialize.createCompare();
+		//Initialize.createLoss(ITERATIONS, total_loss);
+	//	
 		
 		
 		

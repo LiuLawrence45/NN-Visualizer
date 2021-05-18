@@ -20,6 +20,10 @@ https://www.machinecurve.com/index.php/2020/12/01/how-to-check-if-your-deep-lear
 Using loss and visualization to see if model is overfitting / underfitting the data given
 
 
+https://machinelearningmastery.com/how-to-configure-the-number-of-layers-and-nodes-in-a-neural-network/
+Why multiple layers
+
+
 
 --------
 Ideas

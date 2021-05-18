@@ -43,6 +43,21 @@ import javax.swing.JCheckBox;
 import javax.swing.JTree;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.io.IOException;
+
+import javax.swing.JFrame;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import javafx.*;
 
 public class GUI {
 	
@@ -53,7 +68,7 @@ public class GUI {
 	static int hneurons = 6;
 	static int output = 1;
 
-	private JFrame frmNeuralNetworkVisualizer;
+	public JFrame frmNeuralNetworkVisualizer;
 	private JTextField u_outputNeurons;
 	private JTextField u_inputNeurons;
 	private JTextField u_hiddenLayers;
@@ -93,23 +108,23 @@ public class GUI {
 		window.add(new ChartPanel(chart), BorderLayout.CENTER);
 		window.setVisible(true);
 		
-		try {
-			System.out.println("start");
-			Thread.sleep(5000);
-			System.out.println("end");
-
-			
-		}
-		catch (Exception E) {
-			
-		}
-//		for (int i =0; i < ITERATIONS; i++) {
-//			series.add(i,total_loss[i][0]);
+//		try {
+//			System.out.println("start");
+//			Thread.sleep(5000);
+//			System.out.println("end");
+//
 //			
-//			window.revalidate();
-//			window.repaint();
-//			//System.out.println("loss: " + total_loss[i][0]);
-//			}
+//		}
+//		catch (Exception E) {
+//			
+//		}
+		for (int i =0; i < ITERATIONS; i++) {
+			series.add(i,total_loss[i][0]);
+			
+			//window.revalidate();
+			window.repaint();
+			System.out.println("loss: " + total_loss[i][0]);
+			}
 
 		
 	
@@ -518,7 +533,8 @@ public class GUI {
 
 				if (displayLoss.isSelected() == true) {
 					Initialize.createLoss(ITERATIONS, total_loss);
-					//createLossGraph(total_loss,ITERATIONS);
+					//GUI temp = new GUI();
+					//temp.createLossGraph(total_loss,ITERATIONS);
 
 				}
 
