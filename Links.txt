@@ -29,7 +29,7 @@ Ideas
 
 
 --------
-User Manual
+User Manual (Feed-forward neural network)
 --------
 
 1. Adjusting Layers/Neurons
@@ -55,8 +55,6 @@ Ex:
 1,0,1:1
 0,1,1:1
 1,1,1:1
-
-3. 
 
 
 

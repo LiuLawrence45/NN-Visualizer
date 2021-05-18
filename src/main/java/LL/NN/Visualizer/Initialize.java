@@ -1,6 +1,7 @@
 package LL.NN.Visualizer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -17,7 +18,7 @@ import javafx.*;
 
 
 
-public class Initialize {
+public class Initialize{
 	
 	int input = 2;
 	int hlayers = 1;
@@ -25,7 +26,36 @@ public class Initialize {
 	int output = 1;
 
 
+	public static void createLoss(int ITERATIONS, float[][]total_loss) {
+//		JFrame frmNeuralNetworkVisualizer;
+//		frmNeuralNetworkVisualizer = new JFrame();
+//		frmNeuralNetworkVisualizer.setTitle("Neural Network Visualizer");
+//		frmNeuralNetworkVisualizer.getContentPane().setBackground(new Color (238,238,238));
+//		frmNeuralNetworkVisualizer.setBounds(100, 100, 752, 517);
+//		frmNeuralNetworkVisualizer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frmNeuralNetworkVisualizer.getContentPane().setLayout(null);
+//		frmNeuralNetworkVisualizer.setVisible(true);
+		JFrame window = new JFrame("Loss output");
+		window.setSize(600,400);
+		window.setLayout(new BorderLayout());
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+		
+		XYSeries series = new XYSeries("Loss");
+		XYSeriesCollection dataset = new XYSeriesCollection(series);
+		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
+		window.add(new ChartPanel(chart), BorderLayout.CENTER);
+		window.setVisible(true);
+		
+		for (int i =0; i < ITERATIONS; i++) {
+			series.add(i,total_loss[i][0]);
+			window.repaint();
+			//window.validate();
+			System.out.println("loss: " + total_loss[i][0]);
+			}
 	
+	}
 	
 
 	public static void main(String []args) {
@@ -75,26 +105,7 @@ public class Initialize {
 		}
 		
 		//Loss graph
-		JFrame window = new JFrame("Loss output");
-		window.setSize(600,400);
-		window.setLayout(new BorderLayout());
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
-		
-		XYSeries series = new XYSeries("Loss");
-		XYSeriesCollection dataset = new XYSeriesCollection(series);
-		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
-		window.add(new ChartPanel(chart), BorderLayout.CENTER);
-		window.setVisible(true);
-		
-		for (int i =0; i < ITERATIONS; i++) {
-			series.add(i,total_loss[i][0]);
-			window.repaint();
-			//window.validate();
-			System.out.println("loss: " + total_loss[i][0]);
-			}
-	
+		Initialize.createLoss(ITERATIONS, total_loss);
 		
 		
 		

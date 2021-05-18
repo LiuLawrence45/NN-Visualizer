@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JTextArea;
@@ -74,6 +75,48 @@ public class GUI {
 	static boolean networkTrained = false;
 	
 	
+	public void createLossGraph(float[][]total_loss, int ITERATIONS) {
+		
+		//new Thread(() -> createLossGraph(float[][]total_loss, int ITERATIONS)).start();
+		
+		JFrame window = new JFrame("Loss output");
+		//window.setVisible(true);
+		window.setSize(600,400);
+		window.setLayout(new BorderLayout());
+		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+
+		
+		XYSeries series = new XYSeries("Loss");
+		XYSeriesCollection dataset = new XYSeriesCollection(series);
+		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
+		window.add(new ChartPanel(chart), BorderLayout.CENTER);
+		window.setVisible(true);
+		
+		try {
+			System.out.println("start");
+			Thread.sleep(5000);
+			System.out.println("end");
+
+			
+		}
+		catch (Exception E) {
+			
+		}
+//		for (int i =0; i < ITERATIONS; i++) {
+//			series.add(i,total_loss[i][0]);
+//			
+//			window.revalidate();
+//			window.repaint();
+//			//System.out.println("loss: " + total_loss[i][0]);
+//			}
+
+		
+	
+
+	}
+		
+		
 	
 	public void manualTraining() {
 		String [] data = m_trainingData.getText().split("\\n");
@@ -116,8 +159,9 @@ public class GUI {
 				}
 			}
 		});
-		
-		
+//		
+//		GUI window = new GUI();
+//		window.frmNeuralNetworkVisualizer.setVisible(true);
 	}
 
 	/**
@@ -470,9 +514,11 @@ public class GUI {
 					System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
 					//System.out.println("")
 				}
+				System.out.println("======================");
 
 				if (displayLoss.isSelected() == true) {
-					gate.createLossGraph(ITERATIONS, total_loss);
+					Initialize.createLoss(ITERATIONS, total_loss);
+					//createLossGraph(total_loss,ITERATIONS);
 
 				}
 
@@ -568,18 +614,30 @@ public class GUI {
 		submit_uinput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (networkTrained == true) {
-					String[] data = u_input.getText().split(",");
-					float [] float_data = new float [data.length];
-					for (int i = 0; i < data.length; i++) {
-						float_data[i] = Float.parseFloat(data[i]);
-					}
-					gate.forward(float_data);
-					
-					//Print every neuron
-					for (int i =0; i < gate.layers[gate.layers.length-1].neurons.length; i++) {
-						System.out.println(gate.layers[gate.layers.length-1].neurons[i].value);
-					}
+					try {
+						String[] data = u_input.getText().split(",");
+						float [] float_data = new float [data.length];
+						for (int i = 0; i < data.length; i++) {
+							float_data[i] = Float.parseFloat(data[i]);
+						}
+						gate.forward(float_data);
+						
+						//Print every neuron
+						for (int i =0; i < gate.layers[gate.layers.length-1].neurons.length; i++) {
+							for (int j = 0; j < float_data.length; j++) {
+								System.out.print(float_data[j] + " ");
+							}
+							System.out.print("\t");
+							System.out.print(gate.layers[gate.layers.length-1].neurons[i].value);
+						}
+						System.out.println();
+						System.out.println("======================");
 
+						
+					}
+					catch (Exception E) {
+						
+					}
 					
 					
 				}
