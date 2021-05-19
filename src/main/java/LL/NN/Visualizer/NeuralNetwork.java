@@ -203,7 +203,7 @@ public class NeuralNetwork {
 			data[i] = (float)Integer.parseInt(temp[i]);
 		}
 		forward(data);
-		System.out.println(layers[2].neurons[0].value);
+		//System.out.println(layers[2].neurons[0].value);
 		
 	}
 	
@@ -223,10 +223,31 @@ public class NeuralNetwork {
 			for (int j = 0; j < layers[i].neurons.length; j++) {
 				float sum = 0;
 				for (int k = 0; k < layers[i-1].neurons.length; k++) {
-					//sum+= layers[i].neurons[j].bias;
+					sum+= layers[i].neurons[j].bias;
 					sum += layers[i-1].neurons[k].value * layers[i].neurons[j].weights[k];
 				}
 				layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
+			}
+		}
+	}
+	
+	/**
+	 * Forward propagation with ReLU in the neural network
+	 * Sum previous layer weights and biases and pass onto next layer neurons
+	 * Sigmoid function to normalize all values
+	 * @param inputs
+	 */
+	public  void forwardReLU(float[] inputs) {
+		layers[0] = new Layer(inputs);
+		//System.out.println("layers: " + layers.length);
+		for (int i = 1	;i<layers.length; i++) {
+			for (int j = 0; j < layers[i].neurons.length; j++) {
+				float sum = 0;
+				for (int k = 0; k < layers[i-1].neurons.length; k++) {
+					//sum+= layers[i].neurons[j].bias;
+					sum += layers[i-1].neurons[k].value * layers[i].neurons[j].weights[k];
+				}
+				layers[i].neurons[j].value = Math.max(sum, 0);
 			}
 		}
 	}
@@ -293,6 +314,19 @@ public class NeuralNetwork {
 		
 	}
 	
+	public float sumReLUGradient(int n_index,int l_index) {
+		float gradient_sum = 0;
+		Layer current_layer = layers[l_index];
+		
+		for (int i = 0; i < current_layer.neurons.length; i++) {
+			Neuron current_neuron = current_layer.neurons[i];
+			gradient_sum += current_neuron.weights[n_index]*current_neuron.gradient;
+		}
+		return gradient_sum;
+	}
+	
+	
+	
 	public  float sumGradient(int n_index,int l_index) {
 		float gradient_sum = 0;
 		Layer current_layer = layers[l_index];
@@ -317,7 +351,7 @@ public class NeuralNetwork {
 			for (int j = 0; j < tDataSet.length; j++) {
 				forward(tDataSet[j].data);
 				total_loss[counter] = backward(learning_rate, tDataSet[j]);
-				//System.out.println(total_loss[counter][0]);
+				//System.out.println("Loss: " + total_loss[counter][0]);
 				counter++;
 
 			}

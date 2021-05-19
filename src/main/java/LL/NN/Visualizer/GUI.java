@@ -58,6 +58,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javafx.*;
+import javax.swing.JFileChooser;
 
 public class GUI {
 	
@@ -97,7 +98,7 @@ public class GUI {
 		JFrame window = new JFrame("Loss output");
 		//window.setVisible(true);
 		window.setSize(600,400);
-		window.setLayout(new BorderLayout());
+		window.getContentPane().setLayout(new BorderLayout());
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 
@@ -105,7 +106,7 @@ public class GUI {
 		XYSeries series = new XYSeries("Loss");
 		XYSeriesCollection dataset = new XYSeriesCollection(series);
 		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
-		window.add(new ChartPanel(chart), BorderLayout.CENTER);
+		window.getContentPane().add(new ChartPanel(chart), BorderLayout.CENTER);
 		window.setVisible(true);
 		
 //		try {
@@ -363,7 +364,7 @@ public class GUI {
 		panel_7.setLayout(null);
 		
 		m_trainingData = new JTextArea();
-		m_trainingData.setBounds(6, 34, 409, 136);
+		m_trainingData.setBounds(6, 34, 409, 124);
 		panel_7.add(m_trainingData);
 		
 		//Manual Training Data
@@ -450,93 +451,99 @@ public class GUI {
 		btnNewButton_2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				gate = new NeuralNetwork(input, hlayers, hneurons, output);
-				//System.out.println("laeyrs 2: " + gate.layers.length);
-				//runNN();
-				if (manualTraining == true) {
-					manualTraining();
-				}
-				else {
-					if (enableNOR.isSelected()) {
-						gate.CreateNORTrainingData();
-					}
-					else if (enableXOR.isSelected()) {
-						gate.CreateXORTrainingData();
-					}
-					else if (enableAND.isSelected()) {
-						gate.CreateANDTrainingData();
+				try {
+					gate = new NeuralNetwork(input, hlayers, hneurons, output);
+					//System.out.println("laeyrs 2: " + gate.layers.length);
+					//runNN();
+					if (manualTraining == true) {
+						manualTraining();
 					}
 					else {
-						System.out.println("Defaulting to XOR...");
-						System.out.println("======================");
-						gate.CreateXORTrainingData();
-					}	
-				}
-				networkTrained = true;
-				
-				
-//				System.out.println("input: " + input);
-//				System.out.println("hlayers: " + hlayers);
-//				System.out.println("hneurons: " + hneurons);
-//				System.out.println("output: " + output);
-				//System.out.println("======================");
-				
-				//System.out.println("======================");
-				System.out.println("Output before training");
-				System.out.println("======================");
-				
-				for (int i = 0; i < gate.tDataSet.length;i++) {
-					gate.forward(gate.tDataSet[i].data);
-					System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
-				}
-				System.out.println("======================");
-				
-				//float[][] total_loss = new float[1000000][1];
-				int ITERATIONS; float RATE;
-				if (u_iterations.getText().isEmpty() == false) {
-					ITERATIONS = Integer.parseInt(u_iterations.getText());
-				}
-				else {
-					System.out.println("Defaulting to 1 million iterations... ");
-					System.out.println("======================");
-					ITERATIONS = 1000000;
-				}
-				if (u_rate.getText().isEmpty() == false) {
-
-					RATE = Float.parseFloat(u_rate.getText());
-				}
-				else {
-					System.out.println("Defaulting to LR of 0.05... ");
-					System.out.println("======================");
-					RATE = 0.05f;
-				}
-				
-				
-				float[][] total_loss = gate.train(ITERATIONS, 0.05f);
-				//System.out.println("first loss: " + total_loss[0][0]);
-				
-				
-				//System.out.println("======================");
-				System.out.println("Output after training");
-				System.out.println("======================");
-				
-				for (int i = 0; i < gate.tDataSet.length;i++) {
-					for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
-						System.out.print(gate.tDataSet[i].data[j] + " ");
+						if (enableNOR.isSelected()) {
+							gate.CreateNORTrainingData();
+						}
+						else if (enableXOR.isSelected()) {
+							gate.CreateXORTrainingData();
+						}
+						else if (enableAND.isSelected()) {
+							gate.CreateANDTrainingData();
+						}
+						else {
+							System.out.println("Defaulting to XOR...");
+							System.out.println("======================");
+							gate.CreateXORTrainingData();
+						}	
 					}
-					System.out.print("\t");
-					gate.forward(gate.tDataSet[i].data);
-					System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
-					//System.out.println("")
-				}
-				System.out.println("======================");
+					networkTrained = true;
+					
+					
+//					System.out.println("input: " + input);
+//					System.out.println("hlayers: " + hlayers);
+//					System.out.println("hneurons: " + hneurons);
+//					System.out.println("output: " + output);
+					//System.out.println("======================");
+					
+					//System.out.println("======================");
+					System.out.println("Output before training");
+					System.out.println("======================");
+					
+					for (int i = 0; i < gate.tDataSet.length;i++) {
+						gate.forward(gate.tDataSet[i].data);
+						System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
+					}
+					System.out.println("======================");
+					
+					//float[][] total_loss = new float[1000000][1];
+					int ITERATIONS; float RATE;
+					if (u_iterations.getText().isEmpty() == false) {
+						ITERATIONS = Integer.parseInt(u_iterations.getText());
+					}
+					else {
+						System.out.println("Defaulting to 1 million iterations... ");
+						System.out.println("======================");
+						ITERATIONS = 1000000;
+					}
+					if (u_rate.getText().isEmpty() == false) {
 
-				if (displayLoss.isSelected() == true) {
-					Initialize.createLoss(ITERATIONS, total_loss);
-					//GUI temp = new GUI();
-					//temp.createLossGraph(total_loss,ITERATIONS);
+						RATE = Float.parseFloat(u_rate.getText());
+					}
+					else {
+						System.out.println("Defaulting to LR of 0.05... ");
+						System.out.println("======================");
+						RATE = 0.05f;
+					}
+					
+					
+					float[][] total_loss = gate.train(ITERATIONS, 0.05f);
+					//System.out.println("first loss: " + total_loss[0][0]);
+					
+					
+					//System.out.println("======================");
+					System.out.println("Output after training");
+					System.out.println("======================");
+					
+					for (int i = 0; i < gate.tDataSet.length;i++) {
+						for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
+							System.out.print(gate.tDataSet[i].data[j] + " ");
+						}
+						System.out.print("\t");
+						gate.forward(gate.tDataSet[i].data);
+						System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
+						//System.out.println("")
+					}
+					System.out.println("======================");
 
+					if (displayLoss.isSelected() == true) {
+						Initialize.createLoss(ITERATIONS, total_loss);
+						//GUI temp = new GUI();
+						//temp.createLossGraph(total_loss,ITERATIONS);
+
+					}
 				}
+				catch (java.lang.OutOfMemoryError E) {
+					System.out.println("Out of memory...");
+				}
+				
 
 
 				
