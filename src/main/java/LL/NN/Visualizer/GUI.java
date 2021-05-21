@@ -194,7 +194,7 @@ public class GUI {
 		frmNeuralNetworkVisualizer = new JFrame();
 		frmNeuralNetworkVisualizer.setTitle("Neural Network Visualizer");
 		frmNeuralNetworkVisualizer.getContentPane().setBackground(new Color (238,238,238));
-		frmNeuralNetworkVisualizer.setBounds(100, 100, 752, 517);
+		frmNeuralNetworkVisualizer.setBounds(100, 100, 980, 517);
 		frmNeuralNetworkVisualizer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmNeuralNetworkVisualizer.getContentPane().setLayout(null);
 		
@@ -234,7 +234,7 @@ public class GUI {
 					
 				}
 				catch(Exception E) {
-					
+			
 				}
 			}
 		});
@@ -487,11 +487,27 @@ public class GUI {
 					System.out.println("Output before training");
 					System.out.println("======================");
 					
+					float accuracy = 0;
+					
 					for (int i = 0; i < gate.tDataSet.length;i++) {
+						for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
+							System.out.print(gate.tDataSet[i].data[j] + " ");
+						}
+						System.out.print("\t");
 						gate.forward(gate.tDataSet[i].data);
-						System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
+						
+						
+						//THIS IS ONLY FOR BINARY OUTPUT!!!!
+						float answer = (float)Math.round(gate.layers[gate.layers.length-1].neurons[0].value);
+						
+						//this only works with one output neuron
+						accuracy+= Math.abs(gate.tDataSet[i].expectedOutput[0] - answer) ;
+						
+						System.out.println(answer);
+						//System.out.println("")
 					}
 					System.out.println("======================");
+					System.out.println("Accuracy: " +  (1 - (accuracy/gate.tDataSet.length)));
 					
 					//float[][] total_loss = new float[1000000][1];
 					int ITERATIONS; float RATE;
@@ -522,15 +538,23 @@ public class GUI {
 					System.out.println("Output after training");
 					System.out.println("======================");
 					
+					accuracy = 0;
 					for (int i = 0; i < gate.tDataSet.length;i++) {
 						for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
 							System.out.print(gate.tDataSet[i].data[j] + " ");
 						}
 						System.out.print("\t");
 						gate.forward(gate.tDataSet[i].data);
-						System.out.println(gate.layers[gate.layers.length-1].neurons[0].value);
-						//System.out.println("")
+						
+						float answer = (float)Math.round(gate.layers[gate.layers.length-1].neurons[0].value);
+						
+						//this only works with one output neuron
+						accuracy+=Math.abs(answer - gate.tDataSet[i].expectedOutput[0]) ;
+						
+						System.out.println(answer);
 					}
+					System.out.println("======================");
+					System.out.println("Accuracy: " + (1 - accuracy/gate.tDataSet.length));
 					System.out.println("======================");
 
 					if (displayLoss.isSelected() == true) {
@@ -651,7 +675,7 @@ public class GUI {
 								System.out.print(float_data[j] + " ");
 							}
 							System.out.print("\t");
-							System.out.print(gate.layers[gate.layers.length-1].neurons[i].value);
+							System.out.print(Math.round(gate.layers[gate.layers.length-1].neurons[i].value));
 						}
 						System.out.println();
 						System.out.println("======================");
@@ -677,5 +701,55 @@ public class GUI {
 		});
 		submit_uinput.setBounds(84, 75, 117, 29);
 		panel_10.add(submit_uinput);
+		
+		JPanel panel_14 = new JPanel();
+		panel_14.setBounds(758, 6, 216, 477);
+		frmNeuralNetworkVisualizer.getContentPane().add(panel_14);
+		panel_14.setLayout(null);
+		
+		JPanel panel_15 = new JPanel();
+		panel_15.setBounds(6, 6, 204, 248);
+		panel_14.add(panel_15);
+		
+		JPanel panel_16 = new JPanel();
+		panel_16.setBackground(Color.LIGHT_GRAY);
+		panel_16.setBounds(6, 266, 204, 205);
+		panel_14.add(panel_16);
+		panel_16.setLayout(null);
+		
+		JPanel panel_17 = new JPanel();
+		panel_17.setBounds(6, 6, 192, 193);
+		panel_16.add(panel_17);
+		panel_17.setLayout(null);
+		
+		JPanel panel_18 = new JPanel();
+		panel_18.setBounds(6, 6, 180, 81);
+		panel_17.add(panel_18);
+		
+		JLabel lblNewLabel_15 = new JLabel("Hidden Layers");
+		panel_18.add(lblNewLabel_15);
+		
+		JRadioButton h_sigmoid = new JRadioButton("Sigmoid");
+		panel_18.add(h_sigmoid);
+		
+		JRadioButton h_relu = new JRadioButton("ReLU");
+		panel_18.add(h_relu);
+		
+		JPanel panel_19 = new JPanel();
+		panel_19.setBounds(6, 106, 180, 81);
+		panel_17.add(panel_19);
+		panel_19.setLayout(null);
+		
+		JLabel lblNewLabel_16 = new JLabel("Output Layer");
+		lblNewLabel_16.setBounds(45, 5, 89, 16);
+		panel_19.add(lblNewLabel_16);
+		
+		JRadioButton o_sigmoid = new JRadioButton("Sigmoid");
+		o_sigmoid.setBounds(14, 26, 83, 23);
+		panel_19.add(o_sigmoid);
+		
+		JRadioButton o_relu = new JRadioButton("ReLU");
+		o_relu.setBounds(102, 26, 63, 23);
+		panel_19.add(o_relu);
 	}
 }

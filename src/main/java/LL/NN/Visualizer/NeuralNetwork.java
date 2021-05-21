@@ -316,12 +316,7 @@ public class NeuralNetwork {
 	
 	public float sumReLUGradient(int n_index,int l_index) {
 		float gradient_sum = 0;
-		Layer current_layer = layers[l_index];
 		
-		for (int i = 0; i < current_layer.neurons.length; i++) {
-			Neuron current_neuron = current_layer.neurons[i];
-			gradient_sum += current_neuron.weights[n_index]*current_neuron.gradient;
-		}
 		return gradient_sum;
 	}
 	
