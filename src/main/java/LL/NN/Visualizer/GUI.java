@@ -90,47 +90,47 @@ public class GUI {
 	TrainingData parsedUserInput;
 	static boolean networkTrained = false;
 	
-	
-	public void createLossGraph(float[][]total_loss, int ITERATIONS) {
-		
-		//new Thread(() -> createLossGraph(float[][]total_loss, int ITERATIONS)).start();
-		
-		JFrame window = new JFrame("Loss output");
-		//window.setVisible(true);
-		window.setSize(600,400);
-		window.getContentPane().setLayout(new BorderLayout());
-		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-
-		
-		XYSeries series = new XYSeries("Loss");
-		XYSeriesCollection dataset = new XYSeriesCollection(series);
-		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
-		window.getContentPane().add(new ChartPanel(chart), BorderLayout.CENTER);
-		window.setVisible(true);
-		
-//		try {
-//			System.out.println("start");
-//			Thread.sleep(5000);
-//			System.out.println("end");
+//	
+//	public void createLossGraph(float[][]total_loss, int ITERATIONS) {
+//		
+//		//new Thread(() -> createLossGraph(float[][]total_loss, int ITERATIONS)).start();
+//		
+//		JFrame window = new JFrame("Loss output");
+//		//window.setVisible(true);
+//		window.setSize(600,400);
+//		window.getContentPane().setLayout(new BorderLayout());
+//		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 //
+//
+//		
+//		XYSeries series = new XYSeries("Loss");
+//		XYSeriesCollection dataset = new XYSeriesCollection(series);
+//		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
+//		window.getContentPane().add(new ChartPanel(chart), BorderLayout.CENTER);
+//		window.setVisible(true);
+//		
+////		try {
+////			System.out.println("start");
+////			Thread.sleep(5000);
+////			System.out.println("end");
+////
+////			
+////		}
+////		catch (Exception E) {
+////			
+////		}
+//		for (int i =0; i < ITERATIONS; i++) {
+//			series.add(i,total_loss[i][0]);
 //			
-//		}
-//		catch (Exception E) {
-//			
-//		}
-		for (int i =0; i < ITERATIONS; i++) {
-			series.add(i,total_loss[i][0]);
-			
-			//window.revalidate();
-			window.repaint();
-			System.out.println("loss: " + total_loss[i][0]);
-			}
-
-		
-	
-
-	}
+//			//window.revalidate();
+//			window.repaint();
+//			System.out.println("loss: " + total_loss[i][0]);
+//			}
+//
+//		
+//	
+//
+//	}
 		
 		
 	
@@ -143,6 +143,7 @@ public class GUI {
 			for (int b =0; b < splitted.length; b++) {
 				tData[i][b] = Float.parseFloat(splitted[b]);
 			}
+			//System.out.println("donme");
 			
 		
 		}
@@ -453,8 +454,7 @@ public class GUI {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					gate = new NeuralNetwork(input, hlayers, hneurons, output);
-					//System.out.println("laeyrs 2: " + gate.layers.length);
-					//runNN();
+
 					if (manualTraining == true) {
 						manualTraining();
 					}
@@ -474,42 +474,17 @@ public class GUI {
 							gate.CreateXORTrainingData();
 						}	
 					}
+					
 					networkTrained = true;
-					
-					
-//					System.out.println("input: " + input);
-//					System.out.println("hlayers: " + hlayers);
-//					System.out.println("hneurons: " + hneurons);
-//					System.out.println("output: " + output);
-					//System.out.println("======================");
-					
-					//System.out.println("======================");
+
 					System.out.println("Output before training");
 					System.out.println("======================");
 					
-					float accuracy = 0;
+
+					gate.printInfo();
 					
-					for (int i = 0; i < gate.tDataSet.length;i++) {
-						for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
-							System.out.print(gate.tDataSet[i].data[j] + " ");
-						}
-						System.out.print("\t");
-						gate.forward(gate.tDataSet[i].data);
-						
-						
-						//THIS IS ONLY FOR BINARY OUTPUT!!!!
-						float answer = (float)Math.round(gate.layers[gate.layers.length-1].neurons[0].value);
-						
-						//this only works with one output neuron
-						accuracy+= Math.abs(gate.tDataSet[i].expectedOutput[0] - answer) ;
-						
-						System.out.println(answer);
-						//System.out.println("")
-					}
-					System.out.println("======================");
-					System.out.println("Accuracy: " +  (1 - (accuracy/gate.tDataSet.length)));
-					
-					//float[][] total_loss = new float[1000000][1];
+				
+
 					int ITERATIONS; float RATE;
 					if (u_iterations.getText().isEmpty() == false) {
 						ITERATIONS = Integer.parseInt(u_iterations.getText());
@@ -530,40 +505,28 @@ public class GUI {
 					}
 					
 					
-					float[][] total_loss = gate.train(ITERATIONS, 0.05f);
-					//System.out.println("first loss: " + total_loss[0][0]);
-					
+					if (displayLoss.isSelected() == true) {
+						gate.lossTrain(ITERATIONS, RATE);
+						//float[][] total_loss = gate.train(ITERATIONS, 0.05f);
+						//gate.createLossGraph(ITERATIONS, total_loss);
+				}
+					else {
+						gate.train(ITERATIONS, 0.05f);
+						System.out.println("Output after training");
+						System.out.println("======================");
+						
+						gate.printInfo();
+					}
+
+					System.out.println("Output after training");
 					
 					//System.out.println("======================");
-					System.out.println("Output after training");
-					System.out.println("======================");
-					
-					accuracy = 0;
-					for (int i = 0; i < gate.tDataSet.length;i++) {
-						for (int j = 0; j < gate.tDataSet[i].data.length; j++) {
-							System.out.print(gate.tDataSet[i].data[j] + " ");
-						}
-						System.out.print("\t");
-						gate.forward(gate.tDataSet[i].data);
-						
-						float answer = (float)Math.round(gate.layers[gate.layers.length-1].neurons[0].value);
-						
-						//this only works with one output neuron
-						accuracy+=Math.abs(answer - gate.tDataSet[i].expectedOutput[0]) ;
-						
-						System.out.println(answer);
-					}
-					System.out.println("======================");
-					System.out.println("Accuracy: " + (1 - accuracy/gate.tDataSet.length));
-					System.out.println("======================");
 
-					if (displayLoss.isSelected() == true) {
-						Initialize.createLoss(ITERATIONS, total_loss);
-						//GUI temp = new GUI();
-						//temp.createLossGraph(total_loss,ITERATIONS);
 
-					}
-				}
+
+			}
+				
+				
 				catch (java.lang.OutOfMemoryError E) {
 					System.out.println("Out of memory...");
 				}

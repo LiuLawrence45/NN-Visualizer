@@ -61,7 +61,7 @@ public class Initialize{
 			series.add(i,total_loss[i][0]);
 			window.repaint();
 			//window.revalidate();
-			System.out.println("loss: " + total_loss[i][0]);
+			//System.out.println("loss: " + total_loss[i][0]);
 			}
 	
 	}
@@ -105,7 +105,7 @@ public class Initialize{
 		gate.layers[2] = new Layer(6,1);
 		
 		gate.CreateXORTrainingData();
-		
+	
 		System.out.println("======================");
 		System.out.println("Output before training");
 		System.out.println("======================");
@@ -133,8 +133,8 @@ public class Initialize{
 		}
 		
 		//Loss graph
-		Initialize.createCompare();
-		//Initialize.createLoss(ITERATIONS, total_loss);
+		//Initialize.createCompare();
+		Initialize.createLoss(ITERATIONS, total_loss);
 	//	
 		
 		

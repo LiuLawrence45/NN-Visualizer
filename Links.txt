@@ -23,6 +23,8 @@ Using loss and visualization to see if model is overfitting / underfitting the d
 https://machinelearningmastery.com/how-to-configure-the-number-of-layers-and-nodes-in-a-neural-network/
 Why multiple layers
 
+https://towardsdatascience.com/machine-learning-fundamentals-via-linear-regression-41a5d11f5220
+Something about Lin reg
 
 
 --------
