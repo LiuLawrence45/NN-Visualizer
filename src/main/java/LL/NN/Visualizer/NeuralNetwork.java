@@ -240,7 +240,7 @@ public class NeuralNetwork {
 						layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
 					}
 					else {
-						layers[i].neurons[j].value = Math.max(sum, 0);
+						layers[i].neurons[j].value = Math.max(sum, (float)0.01*sum);
 					}
 
 				}
@@ -249,7 +249,7 @@ public class NeuralNetwork {
 						layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
 					}
 					else {
-						layers[i].neurons[j].value =  Math.max(sum, 0);
+						layers[i].neurons[j].value =  Math.max(sum, (float)0.01*sum);
 					}
 
 				}
@@ -301,10 +301,10 @@ public class NeuralNetwork {
 			}
 			else {
 				if (output > 0) {
-					delta = 1;
+					delta = 1*derivative;
 				}
 				else {
-					delta = 0;
+					delta = (float)0.01*derivative;
 				}
 
 			}
@@ -337,7 +337,7 @@ public class NeuralNetwork {
 						delta = 1*gradient_sum;
 					}
 					else {
-						delta = 0;
+						delta = (float)0.01*gradient_sum;
 					}
 
 				}
@@ -352,6 +352,7 @@ public class NeuralNetwork {
 					float previous_output = layers[i-1].neurons[k].value;
 					float error = delta*previous_output;
 					layers[i].neurons[j].cache_weights[k] = layers[i].neurons[j].weights[k] - learning_rate*error;
+					//System.out.println("Error: " + error);
 				}
 			}
 		}
