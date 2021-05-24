@@ -45,13 +45,14 @@ public class NeuralNetwork {
 	float [][]total_loss;
 	float learning_rate;
 	
-	 Layer[] layers;
+	Layer[] layers;
 	
-	 TrainingData[] tDataSet;
+	TrainingData[] tDataSet;
 	 
 	 //float [][] total_loss;
 	 
-	 int input, hlayers,hneurons,output;
+	 public int input, hlayers,hneurons,output, type_hidden,type_output;
+	 
 	 
 	 /**
 	  * Default constructor override
@@ -80,11 +81,7 @@ public class NeuralNetwork {
 				layers[i] = new Layer(hneurons,hneurons);
 			}
 			layers[hlayers+1] = new Layer(hneurons,output);
-//		 layers = new Layer[hlayers+2];
-//		 layers[0] = null;
-//		 layers[1] = new Layer(input,hneurons);
-//		 layers[2] = new Layer(hneurons,output);
-//		 
+
 		 Neuron.setRangeWeight(-1,1); 
 	 }
 	 
@@ -202,18 +199,18 @@ public class NeuralNetwork {
 		
 	}
 	
-	public  void loadData() throws IOException{
-		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-		System.out.print("Import data: ");
-		String []temp = input.readLine().split(" ");
-		float[]data = new float[2];
-		for (int i = 0; i <2;i++) {
-			data[i] = (float)Integer.parseInt(temp[i]);
-		}
-		forward(data);
-		//System.out.println(layers[2].neurons[0].value);
-		
-	}
+//	public  void loadData() throws IOException{
+//		BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+//		System.out.print("Import data: ");
+//		String []temp = input.readLine().split(" ");
+//		float[]data = new float[2];
+//		for (int i = 0; i <2;i++) {
+//			data[i] = (float)Integer.parseInt(temp[i]);
+//		}
+//		forward(data);
+//		//System.out.println(layers[2].neurons[0].value);
+//		
+//	}
 	
 	
 	
@@ -221,54 +218,64 @@ public class NeuralNetwork {
 	/**
 	 * Forward propagation in the neural network
 	 * Sum previous layer weights and biases and pass onto next layer neurons
+	 * to weighted sum
 	 * Sigmoid function to normalize all values
 	 * @param inputs
+	 * @param type_hidden specifying what activation function the hidden layer takes (0 for sigmoid, 1 for relu)
+	 * @param type_output specifying what activation function the output layer takes (0 for sigmoid, 1 for relu)
 	 */
 	public  void forward(float[] inputs) {
 		layers[0] = new Layer(inputs);
-		//System.out.println("layers: " + layers.length);
 		for (int i = 1	;i<layers.length; i++) {
 			for (int j = 0; j < layers[i].neurons.length; j++) {
 				float sum = 0;
 				for (int k = 0; k < layers[i-1].neurons.length; k++) {
-					//sum+= layers[i].neurons[j].bias;
 					sum += layers[i-1].neurons[k].value * layers[i].neurons[j].weights[k];
 				}
-				layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
+				sum+= layers[i].neurons[j].bias;
+				if (i < layers.length-1) {
+					if (type_hidden == 0) {
+						layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
+					}
+					else {
+						layers[i].neurons[j].value = Math.max(sum, 0);
+					}
+
+				}
+				else {
+					if (type_output == 0) {
+						layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
+					}
+					else {
+						layers[i].neurons[j].value =  Math.max(sum, 0);
+					}
+
+				}
+
 			}
 		}
 	}
+
 	
-	/**
-	 * Forward propagation with ReLU in the neural network
-	 * Sum previous layer weights and biases and pass onto next layer neurons
-	 * Sigmoid function to normalize all values
-	 * @param inputs
-	 */
-	public  void forwardReLU(float[] inputs) {
-		layers[0] = new Layer(inputs);
-		//System.out.println("layers: " + layers.length);
-		for (int i = 1	;i<layers.length; i++) {
-			for (int j = 0; j < layers[i].neurons.length; j++) {
-				float sum = 0;
-				for (int k = 0; k < layers[i-1].neurons.length; k++) {
-					//sum+= layers[i].neurons[j].bias;
-					sum += layers[i-1].neurons[k].value * layers[i].neurons[j].weights[k];
-				}
-				layers[i].neurons[j].value = Math.max(sum, 0);
-			}
-		}
-	}
+	
 	
 	//https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
 	/**
 	 * Backwards propagation in the neural network for training
 	 * @param learning_rate
-	 * @param tData
+	 * @param tData, training data
+	 * @param type_hidden specifying what activation function the hidden layer takes (0 for sigmoid, 1 for relu)
+	 * @param type_output specifying what activation function the output layer takes (0 for sigmoid, 1 for relu)
 	 */
 	public float[] backward(float learning_rate, TrainingData tData) {
+		//0 is sigmoid activation
+		//1 is relu activation
+		
+		
 		int number_layers = layers.length;
 		int out_index = number_layers - 1;
+		
+		
 		float[] loss_data = new float[layers[out_index].neurons.length];
 		int counter = 0;
 		
@@ -279,11 +286,28 @@ public class NeuralNetwork {
 			float derivative = output-target;
 			
 			//This is technically incorrect, only works because I have one output neuron
+			//mean squared error
 			loss_data[counter] = (float)Math.pow(derivative, 2);
 
 			counter++;
 			
-			float delta = derivative*(output*(1-output));
+			
+			//DIFFERENTIATING between RELU and Sigmoid gradients
+			float delta;
+			if (type_output == 0) {
+				delta = derivative*(output*(1-output));
+			}
+			else {
+				if (output > 0) {
+					delta = 1;
+				}
+				else {
+					delta = 0;
+				}
+
+			}
+			
+			
 			layers[out_index].neurons[i].gradient = delta;
 			for (int j = 0; j < layers[out_index].neurons[i].weights.length; j++) {
 				float previous_output = layers[out_index-1].neurons[j].value;
@@ -299,7 +323,23 @@ public class NeuralNetwork {
 			for (int j = 0;j < layers[i].neurons.length; j++) {
 				float output = layers[i].neurons[j].value;
 				float gradient_sum = sumGradient(j, i+1);
-				float delta = (gradient_sum) * output*(1-output);
+				
+				
+				//DIFFERENTIATING between RELU and Sigmoid gradients
+				float delta;
+				if (type_hidden == 0) {
+					delta = gradient_sum*(output*(1-output));
+				}
+				else {
+					if (output > 0) {
+						delta = 1;
+					}
+					else {
+						delta = 0;
+					}
+
+				}
+				
 				layers[i].neurons[j].gradient = delta;
 				
 				//And all weights
@@ -320,13 +360,6 @@ public class NeuralNetwork {
 		return loss_data;
 		
 	}
-	
-	public float sumReLUGradient(int n_index,int l_index) {
-		float gradient_sum = 0;
-		
-		return gradient_sum;
-	}
-	
 	
 	
 	public  float sumGradient(int n_index,int l_index) {
@@ -406,6 +439,7 @@ public class NeuralNetwork {
 						counter = counter + backward(learning_rate, tDataSet[j])[0];
 
 					}
+					//MSE 
 					counter /= tDataSet.length;
 					series.add(i,counter);
 					window.repaint();

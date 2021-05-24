@@ -30,7 +30,7 @@ public class Neuron {
 	 */
 	public Neuron(float value) {
 		weights = null;
-		bias = -1;
+		bias = 0;
 		cache_weights = null;
 		gradient = -1;
 		this.value = value;

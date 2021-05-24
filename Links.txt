@@ -26,6 +26,13 @@ Why multiple layers
 https://towardsdatascience.com/machine-learning-fundamentals-via-linear-regression-41a5d11f5220
 Something about Lin reg
 
+https://towardsdatascience.com/animations-of-gradient-descent-and-loss-landscapes-of-neural-networks-in-python-e757f3584057
+Animating Gradient Descent
+
+
+FOR xor gates - its not a linearly separable problem, meaning that a normal perceptron can not solve it
+As a result, you need multiple hidden neurons/ layers
+
 
 --------
 Ideas

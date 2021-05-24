@@ -81,6 +81,8 @@ public class GUI {
 	JTextArea m_trainingData;
 	
 	static JRadioButton enableXOR;
+	
+	JRadioButton h_relu,h_sigmoid,o_relu,o_sigmoid;
 
 	static JRadioButton enableNOR;
 	static JRadioButton enableAND;
@@ -89,6 +91,8 @@ public class GUI {
 	static JTextArea u_input;
 	TrainingData parsedUserInput;
 	static boolean networkTrained = false;
+	private final ButtonGroup hidden_group = new ButtonGroup();
+	private final ButtonGroup output_group = new ButtonGroup();
 	
 //	
 //	public void createLossGraph(float[][]total_loss, int ITERATIONS) {
@@ -143,7 +147,6 @@ public class GUI {
 			for (int b =0; b < splitted.length; b++) {
 				tData[i][b] = Float.parseFloat(splitted[b]);
 			}
-			//System.out.println("donme");
 			
 		
 		}
@@ -475,6 +478,29 @@ public class GUI {
 						}	
 					}
 					
+					if (h_relu.isSelected()) {
+						
+						gate.type_hidden = 1;
+						System.out.println("Hidden ReLU Activation");
+						System.out.println("======================");
+					}
+					else {
+						System.out.println("Hidden Sigmoid Activation");
+						System.out.println("======================");
+						gate.type_hidden = 0;
+					}
+					if (o_relu.isSelected()) {
+						System.out.println("Output ReLU Activation");
+						System.out.println("======================");
+						gate.type_output = 1;
+					}
+					else {
+						System.out.println("Output Sigmoid Activation");
+						System.out.println("======================");
+						gate.type_output = 0;
+					}
+					
+					
 					networkTrained = true;
 
 					System.out.println("Output before training");
@@ -692,10 +718,12 @@ public class GUI {
 		JLabel lblNewLabel_15 = new JLabel("Hidden Layers");
 		panel_18.add(lblNewLabel_15);
 		
-		JRadioButton h_sigmoid = new JRadioButton("Sigmoid");
+		h_sigmoid = new JRadioButton("Sigmoid");
+		hidden_group.add(h_sigmoid);
 		panel_18.add(h_sigmoid);
 		
-		JRadioButton h_relu = new JRadioButton("ReLU");
+		h_relu = new JRadioButton("ReLU");
+		hidden_group.add(h_relu);
 		panel_18.add(h_relu);
 		
 		JPanel panel_19 = new JPanel();
@@ -707,11 +735,13 @@ public class GUI {
 		lblNewLabel_16.setBounds(45, 5, 89, 16);
 		panel_19.add(lblNewLabel_16);
 		
-		JRadioButton o_sigmoid = new JRadioButton("Sigmoid");
+		o_sigmoid = new JRadioButton("Sigmoid");
+		output_group.add(o_sigmoid);
 		o_sigmoid.setBounds(14, 26, 83, 23);
 		panel_19.add(o_sigmoid);
 		
-		JRadioButton o_relu = new JRadioButton("ReLU");
+		o_relu = new JRadioButton("ReLU");
+		output_group.add(o_relu);
 		o_relu.setBounds(102, 26, 63, 23);
 		panel_19.add(o_relu);
 	}
