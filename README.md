@@ -1,7 +1,14 @@
 # NN-Visualizer
-Neural Network Visualizer for Data and Algorithms Final
+Neural Network Visualizer for Data and Algorithms Final. NN-Visualizer is an open source Java Neural Network framework.
 
-The neural network is trained to give correct output to basic logic gates (XOR, XNOR, AND, OR). 
+<h2>Features</h2>
+
+  - Presets to solve common gates (XOR, NOR, AND)
+  - Customize Neural Network Structure through GUI
+  - Provide manual training data
+  - Display an animated graph for MSE over given epochs
+  - Customize the learning rate as well as epochs
+  - Change activation functions for the hidden layer as well as output layer (Sigmoid and ReLU)
 
 <h2>Literature and Information</h2>
 
