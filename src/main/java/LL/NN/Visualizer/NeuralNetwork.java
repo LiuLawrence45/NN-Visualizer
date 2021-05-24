@@ -233,6 +233,8 @@ public class NeuralNetwork {
 					sum += layers[i-1].neurons[k].value * layers[i].neurons[j].weights[k];
 				}
 				sum+= layers[i].neurons[j].bias;
+				
+				//System.out.println ("Max: " + Math.max(sum, 0));
 				if (i < layers.length-1) {
 					if (type_hidden == 0) {
 						layers[i].neurons[j].value = StatUtil.Sigmoid(sum);
@@ -306,7 +308,7 @@ public class NeuralNetwork {
 				}
 
 			}
-			
+
 			
 			layers[out_index].neurons[i].gradient = delta;
 			for (int j = 0; j < layers[out_index].neurons[i].weights.length; j++) {
@@ -332,13 +334,16 @@ public class NeuralNetwork {
 				}
 				else {
 					if (output > 0) {
-						delta = 1;
+						delta = 1*gradient_sum;
 					}
 					else {
 						delta = 0;
 					}
 
 				}
+				
+				//System.out.println("output: " + output + "\tdelta: " + delta);
+				
 				
 				layers[i].neurons[j].gradient = delta;
 				
