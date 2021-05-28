@@ -45,6 +45,7 @@ public class NeuralNetwork {
 	float [][]total_loss;
 	float learning_rate;
 	
+	Thread runner;
 	Layer[] layers;
 	
 	TrainingData[] tDataSet;
@@ -231,8 +232,10 @@ public class NeuralNetwork {
 				float sum = 0;
 				for (int k = 0; k < layers[i-1].neurons.length; k++) {
 					sum += layers[i-1].neurons[k].value * layers[i].neurons[j].weights[k];
+					//System.out.println("weight: " + layers[i].neurons[j].weights[k]);
 				}
 				sum+= layers[i].neurons[j].bias;
+				//System.out.println("----------------------------");
 				
 				//System.out.println ("Max: " + Math.max(sum, 0));
 				if (i < layers.length-1) {
@@ -304,6 +307,7 @@ public class NeuralNetwork {
 					delta = 1*derivative;
 				}
 				else {
+					delta = (float)0.01*derivative;
 					delta = (float)0.01*derivative;
 				}
 
@@ -412,7 +416,7 @@ public class NeuralNetwork {
 		this.ITERATIONS = training_iterations;
 		this.learning_rate = learning_rate1;
 		
-		Thread runner = new Thread() {
+			runner = new Thread() {
 			public void run() {
 				window = new JFrame("Loss output");
 				window.setSize(600,400);
@@ -525,6 +529,7 @@ public class NeuralNetwork {
 		}
 		System.out.println("======================");
 		System.out.println("Accuracy: " +  (1 - (accuracy/tDataSet.length)));
+		System.out.println("======================");
 	}
 	
 

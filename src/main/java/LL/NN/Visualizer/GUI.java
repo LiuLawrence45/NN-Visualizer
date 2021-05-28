@@ -46,6 +46,9 @@ import java.awt.event.ItemEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 
@@ -59,7 +62,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javafx.*;
 import javax.swing.JFileChooser;
-
+import java.io.*;
 public class GUI {
 	
 	//Initialize modifier = new Initialize();
@@ -77,7 +80,6 @@ public class GUI {
 	JTextField u_rate;
 	JTextField u_iterations;
 	
-	
 	JTextArea m_trainingData;
 	
 	static JRadioButton enableXOR;
@@ -88,62 +90,24 @@ public class GUI {
 	static JRadioButton enableAND;
 	static JCheckBox displayLoss;
 	static boolean manualTraining;
+	static boolean manualFile;
 	static JTextArea u_input;
 	TrainingData parsedUserInput;
 	static boolean networkTrained = false;
 	private final ButtonGroup hidden_group = new ButtonGroup();
 	private final ButtonGroup output_group = new ButtonGroup();
-	
-//	
-//	public void createLossGraph(float[][]total_loss, int ITERATIONS) {
-//		
-//		//new Thread(() -> createLossGraph(float[][]total_loss, int ITERATIONS)).start();
-//		
-//		JFrame window = new JFrame("Loss output");
-//		//window.setVisible(true);
-//		window.setSize(600,400);
-//		window.getContentPane().setLayout(new BorderLayout());
-//		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//
-//
-//		
-//		XYSeries series = new XYSeries("Loss");
-//		XYSeriesCollection dataset = new XYSeriesCollection(series);
-//		JFreeChart chart = ChartFactory.createXYLineChart("Loss Squared Regression", "Iterations", "Value", dataset);
-//		window.getContentPane().add(new ChartPanel(chart), BorderLayout.CENTER);
-//		window.setVisible(true);
-//		
-////		try {
-////			System.out.println("start");
-////			Thread.sleep(5000);
-////			System.out.println("end");
-////
-////			
-////		}
-////		catch (Exception E) {
-////			
-////		}
-//		for (int i =0; i < ITERATIONS; i++) {
-//			series.add(i,total_loss[i][0]);
-//			
-//			//window.revalidate();
-//			window.repaint();
-//			System.out.println("loss: " + total_loss[i][0]);
-//			}
-//
-//		
-//	
-//
-//	}
+	JTextField filePath;
+	JCheckBox splittedData;
+
 		
 		
 	
-	public void manualTraining() {
-		String [] data = m_trainingData.getText().split("\\n");
-		float [][] tData = new float[data.length][m_trainingData.getText().split("\\n")[0].split("[,:]").length];
+	public void manualTraining(String data1) {
+		String [] data = data1.split("\\n");
+		float [][] tData = new float[data.length][data1.split("\\n")[0].split("[,:]").length];
 		
 		for (int i = 0; i < data.length; i++) {
-			String [] splitted = m_trainingData.getText().split("\\n")[i].split("[,:]");
+			String [] splitted = data1.split("\\n")[i].split("[,:]");
 			for (int b =0; b < splitted.length; b++) {
 				tData[i][b] = Float.parseFloat(splitted[b]);
 			}
@@ -153,6 +117,30 @@ public class GUI {
 		
 		gate.tDataSet = new TrainingData[data.length];
 		for (int i = 0; i < data.length; i++) {
+			gate.tDataSet[i] = new TrainingData(Arrays.copyOfRange(tData[i],0,tData[0].length-1),
+					Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
+		}
+		
+		for (int i =0; i < gate.tDataSet.length; i++) {
+			System.out.println(Arrays.toString(gate.tDataSet[i].data));
+			System.out.println(Arrays.toString(gate.tDataSet[i].expectedOutput));
+			System.out.println("======================");
+		}
+	}
+	
+	public void splittedTraining(String data1) {
+		String [] data = data1.split("\\n");
+		float [][] tData = new float[data.length][data1.split("\\n")[0].split("[,:]").length];
+		
+		for (int i = 0; i < data.length/2; i++) {
+			String [] splitted = data1.split("\\n")[i].split("[,:]");
+			for (int b =0; b < splitted.length; b++) {
+				tData[i][b] = Float.parseFloat(splitted[b]);
+			}
+		}
+		
+		gate.tDataSet = new TrainingData[data.length/2];
+		for (int i = 0; i < data.length/2; i++) {
 			gate.tDataSet[i] = new TrainingData(Arrays.copyOfRange(tData[i],0,tData[0].length-1),
 					Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
 		}
@@ -456,10 +444,31 @@ public class GUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
+					String content = "";
 					gate = new NeuralNetwork(input, hlayers, hneurons, output);
+					
 
 					if (manualTraining == true) {
-						manualTraining();
+						manualTraining(m_trainingData.getText());
+					}
+					else if (manualFile == true) {
+						try {
+							content = new String (Files.readAllBytes(Paths.get(filePath.getText())), StandardCharsets.UTF_8);
+							System.out.println(content);
+							if (splittedData.isSelected()) {
+								splittedTraining(content);
+							}
+							
+							else {
+								manualTraining(content);
+							}
+
+
+						}
+						catch(Exception E) {
+
+						}
+
 					}
 					else {
 						if (enableNOR.isSelected()) {
@@ -533,23 +542,18 @@ public class GUI {
 					
 					if (displayLoss.isSelected() == true) {
 						gate.lossTrain(ITERATIONS, RATE);
-						//float[][] total_loss = gate.train(ITERATIONS, 0.05f);
-						//gate.createLossGraph(ITERATIONS, total_loss);
+						
 				}
 					else {
-						gate.train(ITERATIONS, 0.05f);
-						System.out.println("Output after training");
+						gate.train(ITERATIONS, RATE);
+						System.out.println("Output after training with training data");
 						System.out.println("======================");
-						
 						gate.printInfo();
+
+
+						
+
 					}
-
-					System.out.println("Output after training");
-					
-					//System.out.println("======================");
-
-
-
 			}
 				
 				
@@ -646,10 +650,14 @@ public class GUI {
 		u_input.setBounds(6, 34, 271, 29);
 		panel_10.add(u_input);
 		
+		
+		
+		//MANUAL INPUT AFTER NETWORK TRAINED
 		JButton submit_uinput = new JButton("Submit");
 		submit_uinput.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (networkTrained == true) {
+					
 					try {
 						String[] data = u_input.getText().split(",");
 						float [] float_data = new float [data.length];
@@ -672,7 +680,8 @@ public class GUI {
 						
 					}
 					catch (Exception E) {
-						
+						System.out.println("Invalid input");
+						System.out.println("======================");
 					}
 					
 					
@@ -697,8 +706,44 @@ public class GUI {
 		panel_14.setLayout(null);
 		
 		JPanel panel_15 = new JPanel();
+		panel_15.setBackground(Color.LIGHT_GRAY);
 		panel_15.setBounds(6, 6, 204, 248);
 		panel_14.add(panel_15);
+		panel_15.setLayout(null);
+		
+		JLabel lblNewLabel_17 = new JLabel("Import File Path");
+		lblNewLabel_17.setBounds(52, 5, 99, 16);
+		panel_15.add(lblNewLabel_17);
+		
+		filePath = new JTextField();
+		filePath.setBounds(37, 26, 130, 26);
+		panel_15.add(filePath);
+		filePath.setColumns(10);
+		
+		splittedData = new JCheckBox("Split data");
+		splittedData.setBounds(10, 60, 91, 23);
+		panel_15.add(splittedData);
+		
+		JButton submitFile = new JButton("Submit");
+		submitFile.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+					manualFile = true;
+					System.out.println("Path: " + filePath.getText());
+//					String content = new String (Files.readAllBytes(Paths.get(filePath.getText())), StandardCharsets.UTF_8);
+//					manualTraining(content);
+
+
+				
+			}
+		});
+		submitFile.setBounds(106, 57, 88, 29);
+		panel_15.add(submitFile);
+		
+		JPanel panel_20 = new JPanel();
+		panel_20.setBounds(6, 95, 192, 147);
+		panel_15.add(panel_20);
 		
 		JPanel panel_16 = new JPanel();
 		panel_16.setBackground(Color.LIGHT_GRAY);
@@ -746,3 +791,38 @@ public class GUI {
 		panel_19.add(o_relu);
 	}
 }
+
+
+
+
+/*
+if (splittedData.isSelected()) {
+						System.out.println("Output with split test data");
+						System.out.println("======================");
+						String content = "";
+						try {
+							content = new String (Files.readAllBytes(Paths.get(filePath.getText())), StandardCharsets.UTF_8);
+						}
+						catch(Exception E) {
+							
+						}
+
+						String [] data = content.split("\\n");
+						float [][] tData = new float[data.length][content.split("\\n")[0].split("[,:]").length];
+						
+						for (int i = data.length/2-1; i < data.length; i++) {
+							String [] splitted = content.split("\\n")[i].split("[,:]");
+							for (int b =0; b < splitted.length; b++) {
+								tData[i][b] = Float.parseFloat(splitted[b]);
+							}
+						}
+						
+						gate.tDataSet = new TrainingData[data.length/2];
+						for (int i = 0; i < data.length/2; i++) {
+							gate.tDataSet[i] = new TrainingData(Arrays.copyOfRange(tData[i],0,tData[0].length-1),
+									Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
+						}
+						gate.printInfo();
+						
+					}
+					*/
