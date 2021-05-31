@@ -121,13 +121,14 @@ public class GUI {
 					Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
 		}
 		
-		for (int i =0; i < gate.tDataSet.length; i++) {
-			System.out.println(Arrays.toString(gate.tDataSet[i].data));
-			System.out.println(Arrays.toString(gate.tDataSet[i].expectedOutput));
-			System.out.println("======================");
-		}
+//		for (int i =0; i < gate.tDataSet.length; i++) {
+//			System.out.println(Arrays.toString(gate.tDataSet[i].data));
+//			System.out.println(Arrays.toString(gate.tDataSet[i].expectedOutput));
+//			System.out.println("======================");
+//		}
 	}
 	
+	//Training with splitted user input data
 	public void splittedTraining(String data1) {
 		String [] data = data1.split("\\n");
 		float [][] tData = new float[data.length][data1.split("\\n")[0].split("[,:]").length];
@@ -144,12 +145,67 @@ public class GUI {
 			gate.tDataSet[i] = new TrainingData(Arrays.copyOfRange(tData[i],0,tData[0].length-1),
 					Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
 		}
+		//System.out.println("tdataset is:" + gate.tDataSet.length);
 		
-		for (int i =0; i < gate.tDataSet.length; i++) {
-			System.out.println(Arrays.toString(gate.tDataSet[i].data));
-			System.out.println(Arrays.toString(gate.tDataSet[i].expectedOutput));
-			System.out.println("======================");
+//		for (int i =0; i < gate.tDataSet.length; i++) {
+//			System.out.println(Arrays.toString(gate.tDataSet[i].data));
+//			System.out.println(Arrays.toString(gate.tDataSet[i].expectedOutput));
+//			System.out.println("======================");
+//		}
+	}
+	
+	//Output with splitted data provided by user
+	public void splittedOutput(String data1) {
+		String [] data = data1.split("\\n");
+		float [][] tData = new float[data.length][data1.split("\\n")[0].split("[,:]").length];
+		
+		for (int i = 0; i < data.length; i++) {
+			String [] splitted = data1.split("\\n")[i].split("[,:]");
+			for (int b =0; b < splitted.length; b++) {
+				tData[i][b] = Float.parseFloat(splitted[b]);
+			}
 		}
+		
+		TrainingData[] tDataSet = new TrainingData[data.length/2];
+		for (int i = 0; i < data.length/2; i++) {
+			tDataSet[i] = new TrainingData(Arrays.copyOfRange(tData[i],tData[0].length/2,tData[0].length-1),
+					Arrays.copyOfRange( tData[i],tData[0].length-1, tData[0].length));
+		}
+		
+		
+		float accuracy = 0;
+		
+		//tDataSet.length
+		
+		System.out.println("Output after training with testing data");
+		System.out.println("======================");
+		for (int i = 0; i < tDataSet.length;i++) {
+
+			gate.forward(tDataSet[i].data);
+			
+			
+			//THIS IS ONLY FOR BINARY OUTPUT!!!!
+			float answer = (float)Math.round(gate.layers[gate.layers.length-1].neurons[0].value);
+			
+			//this only works with one output neuron
+			accuracy+= Math.abs(tDataSet[i].expectedOutput[0] - answer) ;
+			
+			if (i < 10) {
+				for (int j = 0; j < tDataSet[i].data.length; j++) {
+					System.out.print(tDataSet[i].data[j] + " ");
+				}
+				System.out.print("\t");
+				System.out.println(answer);
+			}
+
+			
+
+			//System.out.println("")
+		}
+		System.out.println("...");
+		System.out.println("----------------------");
+		System.out.println("Accuracy: " +  (1 - (accuracy/tDataSet.length)));
+		System.out.println("======================");
 	}
 
 	/**
@@ -454,7 +510,7 @@ public class GUI {
 					else if (manualFile == true) {
 						try {
 							content = new String (Files.readAllBytes(Paths.get(filePath.getText())), StandardCharsets.UTF_8);
-							System.out.println(content);
+							//System.out.println(content);
 							if (splittedData.isSelected()) {
 								splittedTraining(content);
 							}
@@ -490,22 +546,22 @@ public class GUI {
 					if (h_relu.isSelected()) {
 						
 						gate.type_hidden = 1;
-						System.out.println("Hidden ReLU Activation");
-						System.out.println("======================");
+//						System.out.println("Hidden ReLU Activation");
+//						System.out.println("======================");
 					}
 					else {
-						System.out.println("Hidden Sigmoid Activation");
-						System.out.println("======================");
+//						System.out.println("Hidden Sigmoid Activation");
+//						System.out.println("======================");
 						gate.type_hidden = 0;
 					}
 					if (o_relu.isSelected()) {
-						System.out.println("Output ReLU Activation");
-						System.out.println("======================");
+//						System.out.println("Output ReLU Activation");
+//						System.out.println("======================");
 						gate.type_output = 1;
 					}
 					else {
-						System.out.println("Output Sigmoid Activation");
-						System.out.println("======================");
+//						System.out.println("Output Sigmoid Activation");
+//						System.out.println("======================");
 						gate.type_output = 0;
 					}
 					
@@ -541,19 +597,36 @@ public class GUI {
 					
 					
 					if (displayLoss.isSelected() == true) {
+						System.out.println("Output after training with training data");
+						System.out.println("======================");
 						gate.lossTrain(ITERATIONS, RATE);
 						
 				}
 					else {
 						gate.train(ITERATIONS, RATE);
-						System.out.println("Output after training with training data");
-						System.out.println("======================");
-						gate.printInfo();
+						if (splittedData.isSelected()) {
+							try {
+								content = new String (Files.readAllBytes(Paths.get(filePath.getText())), StandardCharsets.UTF_8);
+								
+								splittedOutput(content);	
+							}
+							catch(Exception E) {
+								
+							}
+
+						}
+						else {
+							System.out.println("Output after training with training data");
+							System.out.println("======================");
+							gate.printInfo();
+						}
+
 
 
 						
 
 					}
+					
 			}
 				
 				
@@ -658,7 +731,13 @@ public class GUI {
 			public void actionPerformed(ActionEvent e) {
 				if (networkTrained == true) {
 					
+					
+					
 					try {
+						
+
+						
+						
 						String[] data = u_input.getText().split(",");
 						float [] float_data = new float [data.length];
 						for (int i = 0; i < data.length; i++) {
@@ -725,6 +804,7 @@ public class GUI {
 		panel_15.add(splittedData);
 		
 		JButton submitFile = new JButton("Submit");
+		submitFile.setBounds(106, 57, 88, 29);
 		submitFile.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -738,7 +818,6 @@ public class GUI {
 				
 			}
 		});
-		submitFile.setBounds(106, 57, 88, 29);
 		panel_15.add(submitFile);
 		
 		JPanel panel_20 = new JPanel();

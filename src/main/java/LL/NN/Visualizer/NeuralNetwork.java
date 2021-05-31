@@ -508,11 +508,10 @@ public class NeuralNetwork {
 	
 	public void printInfo() {
 		float accuracy = 0;
+		
+		//tDataSet.length
 		for (int i = 0; i < tDataSet.length;i++) {
-			for (int j = 0; j < tDataSet[i].data.length; j++) {
-				System.out.print(tDataSet[i].data[j] + " ");
-			}
-			System.out.print("\t");
+
 			forward(tDataSet[i].data);
 			
 			
@@ -522,12 +521,20 @@ public class NeuralNetwork {
 			//this only works with one output neuron
 			accuracy+= Math.abs(tDataSet[i].expectedOutput[0] - answer) ;
 			
-			System.out.println(answer);
+			if (i < 10) {
+				for (int j = 0; j < tDataSet[i].data.length; j++) {
+					System.out.print(tDataSet[i].data[j] + " ");
+				}
+				System.out.print("\t");
+				System.out.println(answer);
+			}
+
 			
 
 			//System.out.println("")
 		}
-		System.out.println("======================");
+		System.out.println("...");
+		System.out.println("----------------------");
 		System.out.println("Accuracy: " +  (1 - (accuracy/tDataSet.length)));
 		System.out.println("======================");
 	}
