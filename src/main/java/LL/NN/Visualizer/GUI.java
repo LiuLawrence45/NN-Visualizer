@@ -504,7 +504,7 @@ public class GUI {
 					gate = new NeuralNetwork(input, hlayers, hneurons, output);
 					
 
-					if (manualTraining == true) {
+					if (manualTraining == true && m_trainingData.getText().trim().length() != 0) {
 						manualTraining(m_trainingData.getText());
 					}
 					else if (manualFile == true) {
