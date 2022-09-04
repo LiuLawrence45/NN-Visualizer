@@ -13,7 +13,7 @@ Neural Network Visualizer for Data and Algorithms Final. NN-Visualizer is an ope
  
  
  <h2>Future Ideas</h2>
- - Multi class classification, implementing [Softmax Activation](https://machinelearningmastery.com/choose-an-activation-function-for-deep-learning/) for the output layer
+ - Multi class classification, implementing [Softmax Activation](machinelearningmastery.com/choose-an-activation-function-for-deep-learning/) for the output layer
 
 ![Choosing activation functions](https://machinelearningmastery.com/wp-content/uploads/2020/12/How-to-Choose-an-Output-Layer-Activation-Function.png)
 
